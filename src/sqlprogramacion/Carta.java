@@ -5,38 +5,44 @@
  */
 package sqlprogramacion;
 
-
 /**
  *
  * @author delio
  */
-public class Carta  {
- 
-   
-    private String nombre;
-    private int vida;
-    private int ataque;
-    private int coste;
-    private int id;
+public class Carta {
 
+    private String nombre, vida, ataque, coste;
+    public static String id;
 
-    public Carta(String nombre,int vida, int ataque, int coste, int id) {
-        this.nombre= nombre;
+    public Carta(String id, String nombre, String vida, String ataque, String coste) {
+        this.nombre = nombre;
         this.vida = vida;
         this.ataque = ataque;
         this.coste = coste;
-        this.id=id;
+        this.id = id;
     }
 
-    public int getVida() {
+    public void setVida(String vida) {
+        this.vida = vida;
+    }
+
+    public void setAtaque(String ataque) {
+        this.ataque = ataque;
+    }
+
+    public void setCoste(String coste) {
+        this.coste = coste;
+    }
+
+    public String getVida() {
         return vida;
     }
 
-    public int getAtaque() {
+    public String getAtaque() {
         return ataque;
     }
 
-    public int getCoste() {
+    public String getCoste() {
         return coste;
     }
 
@@ -48,14 +54,12 @@ public class Carta  {
         this.nombre = nombre;
     }
 
-    public int getId() {
+    public static String getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public static void setId(String id) {
+        Carta.id = id;
     }
-
- 
 
 }

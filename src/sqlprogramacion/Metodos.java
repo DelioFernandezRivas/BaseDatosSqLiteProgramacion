@@ -20,11 +20,13 @@ import java.util.logging.Logger;
  * @author Delio
  */
 public class Metodos {
-     Connection conexion;
+
+    Connection conexion;
+
     public static Connection conectar() {
         // Conectamos con la base de datos ya creada 
-        String url = "jdbc:sqlite:CartasBase";
-        Connection conn 
+        String url = "jdbc:sqlite:CartasBase.db";
+        Connection conn
                 = null;
         try {
             conn = DriverManager.getConnection(url);
@@ -60,13 +62,13 @@ public class Metodos {
         //Donde va a crear la tabla
         String url = "jdbc:sqlite:CartasBase.db";
         //Le pasamos los datos para crear la tabla 
-        String sql = "CREATE TABLE IF NOT EXISTS Cartas (\n"
-                + "	id integer PRIMARY KEY,\n"
-                + "	nombre text NOT NULL,\n"
-                + "	vida int\n"
-                + "	ataque int\n"
-                + "	coste int\n"
-                + ");";
+        String sql = "CREATE TABLE "
+                + "Cartas"
+                + "(id INT PRIMARY KEY NOT NULL, "
+                + "nombre text NOT NULL, "
+                + "vida INTEGER, "
+                + "ataque INTEGER, "
+                + "coste INTEGER)";
         //Realizamos un try catch en donde optenemos la conexion y la igualamos a DriverManager.getConnection(url);
         //para que lo iguale a la url
         try (Connection conexion = DriverManager.getConnection(url);
@@ -100,7 +102,7 @@ public class Metodos {
 
     public void Seleccionar() {
         //Seleccionamos lo que queremos 
-        String sql = "SELECT id, nombre, vida, ataque, mana FROM Cartas";
+        String sql = "SELECT id, nombre, vida, ataque, coste FROM Cartas";
 
         try (Connection conn = this.conectar();
                 Statement stmt = conn.createStatement();
@@ -108,11 +110,11 @@ public class Metodos {
 
             // Imprimimos los resultados por pantalla con un while 
             while (rs.next()) {
-                System.out.println(rs.getInt("id") + "\t"
+                System.out.println(rs.getString("id") + "\t"
                         + rs.getString("nombre") + "\t"
-                        + rs.getString("vida") + "\t"
-                        + rs.getString("ataque") + "\t"
-                        + rs.getDouble("coste"));
+                        + rs.getInt("vida") + "\t"
+                        + rs.getInt("ataque") + "\t"
+                        + rs.getInt("coste"));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -121,16 +123,16 @@ public class Metodos {
 
     public void insertar(Carta carta) {
         //Insertamos los datos 
-        String sql = "INSERT INTO Cartas(nombre,vida,ataque,coste) VALUES(?,?,?,?,?)";
+        String sql = "INSERT INTO Cartas(id,nombre,vida,ataque,coste) VALUES(?,?,?,?,?)";
         try (Connection conn = this.conectar();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
+
             //le pasamos los parametros que insertamos 
-            pstmt.setString(1, carta.getNombre());
-            pstmt.setInt(2, carta.getVida());
-            pstmt.setInt(3, carta.getAtaque());
-            pstmt.setInt(4, carta.getCoste());
-            pstmt.setInt(5, carta.getId());
+            pstmt.setString(1, carta.getId());
+            pstmt.setString(2, carta.getNombre());
+            pstmt.setString(3, carta.getVida());
+            pstmt.setString(4, carta.getAtaque());
+            pstmt.setString(5, carta.getCoste());
             //y insertamos
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -138,7 +140,7 @@ public class Metodos {
         }
     }
 
-    public void actualizar( int id,Carta carta) {
+    public void actualizar(int id, Carta carta) {
         //Pasamos el String para actualizar 
         String sql = "UPDATE Cartas SET nombre = ? , "
                 + "vida = ? "
@@ -150,11 +152,11 @@ public class Metodos {
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             // le pasamos el parametro correspondiente que queremos actualizar 
-            pstmt.setString(1, carta.getNombre());
-            pstmt.setInt(2, carta.getVida());
-            pstmt.setInt(3, carta.getCoste());
-            pstmt.setInt(4, carta.getCoste());
-            pstmt.setInt(5, id);
+            pstmt.setString(1, carta.getId());
+            pstmt.setString(2, carta.getNombre());
+            pstmt.setString(3, carta.getVida());
+            pstmt.setString(4, carta.getAtaque());
+            pstmt.setString(5, carta.getCoste());
             // y actualizamos 
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -162,7 +164,17 @@ public class Metodos {
         }
     }
 
-    public void borrar(int id,Carta carta) {
+    public void cerrar() {
+        try {
+            conexion.close();
+            System.out.println("Cerrado exitoso");
+        } catch (SQLException ex) {
+            Logger.getLogger(Metodos.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage() + "Error al cerrar la base de datos");
+        }
+    }
+
+    public void borrar(String id) {
         //borramos de la tabla
         String sql = "DELETE FROM Cartas WHERE id = ?";
 //le pasamos el id i borra toda la fila seleccionada
@@ -170,7 +182,7 @@ public class Metodos {
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             // le pasamos el parametro correspondiente
-            pstmt.setInt(5, carta.getId());
+            pstmt.setString(1, id);
             // ejecutamos 
             pstmt.executeUpdate();
 
